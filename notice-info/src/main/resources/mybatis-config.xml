@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+  <properties resource="manifest.properties" />
+
+  <!-- mybatis的配置环境 -->
+  <environments default="development">
+    <!-- mybatis的配置环境 -->
+    <environment id="development">
+      <!-- 事物管理配置 -->
+      <transactionManager type="JDBC" />
+      <!-- 数据源的选择 -->
+      <dataSource type="com.yunli.bigdata.config.DruidDataSourceFactory">
+        <!-- 数据库链接的配置 -->
+        <property name="url" value="jdbc:mysql://10.210.9.149:3306/realtime?serverTimezone=GMT%2B8" />
+        <property name="username" value="root" />
+        <property name="password" value="1qazxsw@Yunli123" />
+        <property name="filters" value="stat" />
+        <!-- 连接池中最多支持多少个活动会话 -->
+        <property name="maxActive" value="200" />
+        <!-- 初始化连接数量 -->
+        <property name="initialSize" value="5" />
+        <!-- 程序向连接池中请求连接时,超过maxWait的值后，认为本次请求失败 -->
+        <property name="maxWait" value="5000" />
+        <!-- 回收空闲连接时，将保证至少有minIdle个连接 -->
+        <property name="minIdle" value="5" />
+
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+
+        <!-- 当程序请求连接，池在分配连接时，是否先检查该连接是否有效 高效 -->
+        <property name="testWhileIdle" value="true" />
+        <!-- 程序申请或者返还连接时进行连接有效性检查 低效 -->
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+
+        <!-- 缓存配置  -->
+        <property name="poolPreparedStatements" value="true" />
+        <property name="maxOpenPreparedStatements" value="20" />
+
+      </dataSource>
+    </environment>
+  </environments>
+
+  <mappers>
+    <mapper resource="mapper/NoticeMapper.xml" />
+  </mappers>
+
+</configuration>
