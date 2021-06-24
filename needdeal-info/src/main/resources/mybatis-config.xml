@@ -15,7 +15,7 @@
       <!-- 数据源的选择 -->
       <dataSource type="com.yunli.bigdata.config.DruidDataSourceFactory">
         <!-- 数据库链接的配置 -->
-        <property name="url" value="jdbc:mysql://10.210.9.149:3306/realtime?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="url" value="jdbc:mysql://10.210.9.149:3306/realtime?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false" />
         <property name="username" value="root" />
         <property name="password" value="1qazxsw@Yunli123" />
         <property name="filters" value="stat" />
@@ -34,8 +34,8 @@
         <!-- 当程序请求连接，池在分配连接时，是否先检查该连接是否有效 高效 -->
         <property name="testWhileIdle" value="true" />
         <!-- 程序申请或者返还连接时进行连接有效性检查 低效 -->
-        <property name="testOnBorrow" value="false" />
-        <property name="testOnReturn" value="false" />
+        <property name="testOnBorrow" value="true" />
+        <property name="testOnReturn" value="true" />
 
         <!-- 缓存配置  -->
         <property name="poolPreparedStatements" value="true" />
