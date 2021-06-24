@@ -37,9 +37,9 @@ public class NoticeProcessor implements Processor {
 
     @Override
     public List<OutputMessage> process(List<InputMessage> list, Map<String, String> map) {
-        log.info("通知消息处理器开始处理,数据{}", JSON.toJSONString(list));
+        log.info("通知消息处理开始,数据{}", JSON.toJSONString(list));
         if (CollectionUtils.isEmpty(list)) {
-            log.error("通知消息处理器接收数据为空");
+            log.error("通知消息处理数据为空");
             return Collections.emptyList();
         }
         // 按照操作类型分组
@@ -50,53 +50,36 @@ public class NoticeProcessor implements Processor {
                 .collect(Collectors.groupingBy(NoticeDomain::getOperateType,
                         Collectors.collectingAndThen(Collectors.toList(), this::convertNoticeList)));
 
-        // 获取sqlSession
         try {
+            // 获取sqlSession
             SqlSession sqlSession = SqlSessionFactoryUtil.openSession();
             NoticeDAO noticeDao = sqlSession.getMapper(NoticeDAO.class);
 
             // 新增
             List<Notice> addNoticeList = noticeMap.get(ADD.getCode());
             if (CollectionUtils.isNotEmpty(addNoticeList)) {
-                try {
-                    int result = noticeDao.insertBatch(addNoticeList);
-                    if (result <= 0) {
-                        log.error("批量新增通知消息失败");
-                    }
-                } catch (Exception e) {
-                    log.error("批量新增通知消息异常,数据{},异常信息{}", JSON.toJSONString(addNoticeList), e.getMessage());
-                }
+                noticeDao.insertBatch(addNoticeList);
             }
 
             // 更新
             List<Notice> updateNoticeList = noticeMap.get(UPDATE.getCode());
             if (CollectionUtils.isNotEmpty(updateNoticeList)) {
-                try {
-                    int result = noticeDao.updateBatch(updateNoticeList);
-                    if (result <= 0) {
-                        log.error("批量更新通知消息失败");
-                    }
-                } catch (Exception e) {
-                    log.error("批量更新通知消息异常,数据{},异常信息{}", JSON.toJSONString(updateNoticeList), e.getMessage());
-                }
+                noticeDao.updateBatch(updateNoticeList);
             }
 
             // 删除
             List<Notice> deleteNoticeList = noticeMap.get(DELETE.getCode());
             if (CollectionUtils.isNotEmpty(deleteNoticeList)) {
-                try {
-                    int result = noticeDao.updateBatch(deleteNoticeList);
-                    if (result <= 0) {
-                        log.error("批量删除通知消息失败");
-                    }
-                } catch (Exception e) {
-                    log.error("批量删除通知消息异常,数据{},异常信息{}", JSON.toJSONString(deleteNoticeList), e.getMessage());
-                }
+               noticeDao.updateBatch(deleteNoticeList);
             }
+
+            log.info("通知消息处理结束,数据{},", JSON.toJSONString(list));
+        } catch (Exception e) {
+            log.error("通知消息处理异常,数据{},异常信息{}", JSON.toJSONString(list), e.getMessage());
         } finally {
+            // 释放资源
             SqlSessionFactoryUtil.closeSession();
         }
-
 
         return Collections.emptyList();
     }
@@ -124,7 +107,6 @@ public class NoticeProcessor implements Processor {
         notice.setGmtModified(date);
         return notice;
     }
-
 
 
 }

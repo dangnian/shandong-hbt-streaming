@@ -37,9 +37,9 @@ public class NeeddealProcessor implements Processor {
 
     @Override
     public List<OutputMessage> process(List<InputMessage> list, Map<String, String> map) {
-        log.info("待办消息处理器开始处理,接收数据{}", JSON.toJSONString(list));
+        log.info("待办消息处理开始,数据{}", JSON.toJSONString(list));
         if (CollectionUtils.isEmpty(list)) {
-            log.error("待办消息处理器接收数据为空");
+            log.error("待办消息处理数据为空");
             return Collections.emptyList();
         }
         // 按照操作类型分组
@@ -58,42 +58,26 @@ public class NeeddealProcessor implements Processor {
             // 新增
             List<Needdeal> addNeeddealList = needdealMap.get(ADD.getCode());
             if (CollectionUtils.isNotEmpty(addNeeddealList)) {
-                try {
-                    int result = needdealDao.insertBatch(addNeeddealList);
-                    if (result <= 0) {
-                        log.error("批量新增待办消息失败");
-                    }
-                } catch (Exception e) {
-                    log.error("批量新增待办消息异常,数据{},异常信息{}", JSON.toJSONString(addNeeddealList), e.getMessage());
-                }
+                needdealDao.insertBatch(addNeeddealList);
             }
 
             // 更新
             List<Needdeal> updateNeeddealList = needdealMap.get(UPDATE.getCode());
             if (CollectionUtils.isNotEmpty(updateNeeddealList)) {
-                try {
-                    int result = needdealDao.updateBatch(updateNeeddealList);
-                    if (result <= 0) {
-                        log.error("批量更新待办消息失败");
-                    }
-                } catch (Exception e) {
-                    log.error("批量更新待办消息异常,数据{},异常信息{}", JSON.toJSONString(updateNeeddealList), e.getMessage());
-                }
+                needdealDao.updateBatch(updateNeeddealList);
             }
 
             // 删除
             List<Needdeal> deleteNeeddealList = needdealMap.get(DELETE.getCode());
             if (CollectionUtils.isNotEmpty(deleteNeeddealList)) {
-                try {
-                    int result = needdealDao.updateBatch(deleteNeeddealList);
-                    if (result <= 0) {
-                        log.error("批量删除待办消息失败");
-                    }
-                } catch (Exception e) {
-                    log.error("批量删除待办消息异常,数据{},异常信息{}", JSON.toJSONString(deleteNeeddealList), e.getMessage());
-                }
+                needdealDao.updateBatch(deleteNeeddealList);
             }
+
+            log.info("待办消息处理结束,数据{},", JSON.toJSONString(list));
+        } catch (Exception e) {
+            log.error("待办消息处理异常,数据{},异常信息{}", JSON.toJSONString(list), e.getMessage());
         } finally {
+            // 释放资源
             SqlSessionFactoryUtil.closeSession();
         }
 
