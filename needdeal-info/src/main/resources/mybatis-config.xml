@@ -15,13 +15,12 @@
       <!-- 数据源的选择 -->
       <dataSource type="com.yunli.bigdata.config.DruidDataSourceFactory">
         <!-- 数据库链接的配置 -->
-        <property name="url" value="jdbc:mysql://10.210.9.149:3306/realtime?serverTimezone=GMT%2B8&amp;
-        useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="url" value="jdbc:mysql://10.210.9.149:3306/realtime?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
         <property name="username" value="root" />
         <property name="password" value="1qazxsw@Yunli123" />
         <property name="filters" value="stat" />
         <!-- 连接池中最多支持多少个活动会话 -->
-        <property name="maxActive" value="10" />
+        <property name="maxActive" value="15" />
         <!-- 初始化连接数量 -->
         <property name="initialSize" value="3" />
         <!-- 程序向连接池中请求连接时,超过maxWait的值后，认为本次请求失败 -->

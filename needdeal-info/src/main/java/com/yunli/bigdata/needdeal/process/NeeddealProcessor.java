@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.ibatis.session.SqlSession;
 
 /**
  * @author pingchangxin
@@ -49,46 +50,51 @@ public class NeeddealProcessor implements Processor {
                 .collect(Collectors.groupingBy(NeeddealDomain::getOperateType,
                         Collectors.collectingAndThen(Collectors.toList(), this::convertNeeddealList)));
 
-        // 获取sqlSession
-        NeeddealDAO needdealDao = SqlSessionFactoryUtil.getMapper(NeeddealDAO.class);
+        try {
+            // 获取sqlSession
+            SqlSession sqlSession = SqlSessionFactoryUtil.openSession();
+            NeeddealDAO needdealDao = sqlSession.getMapper(NeeddealDAO.class);
 
-        // 新增
-        List<Needdeal> addNeeddealList = needdealMap.get(ADD.getCode());
-        if (CollectionUtils.isNotEmpty(addNeeddealList)) {
-            try {
-                int result = needdealDao.insertBatch(addNeeddealList);
-                if (result <= 0) {
-                    log.error("批量新增待办消息失败");
+            // 新增
+            List<Needdeal> addNeeddealList = needdealMap.get(ADD.getCode());
+            if (CollectionUtils.isNotEmpty(addNeeddealList)) {
+                try {
+                    int result = needdealDao.insertBatch(addNeeddealList);
+                    if (result <= 0) {
+                        log.error("批量新增待办消息失败");
+                    }
+                } catch (Exception e) {
+                    log.error("批量新增待办消息异常,数据{},异常信息{}", JSON.toJSONString(addNeeddealList), e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("批量新增待办消息异常,数据{},异常信息{}", JSON.toJSONString(addNeeddealList), e.getMessage());
             }
-        }
 
-        // 更新
-        List<Needdeal> updateNeeddealList = needdealMap.get(UPDATE.getCode());
-        if (CollectionUtils.isNotEmpty(updateNeeddealList)) {
-            try {
-                int result = needdealDao.updateBatch(updateNeeddealList);
-                if (result <= 0) {
-                    log.error("批量更新待办消息失败");
+            // 更新
+            List<Needdeal> updateNeeddealList = needdealMap.get(UPDATE.getCode());
+            if (CollectionUtils.isNotEmpty(updateNeeddealList)) {
+                try {
+                    int result = needdealDao.updateBatch(updateNeeddealList);
+                    if (result <= 0) {
+                        log.error("批量更新待办消息失败");
+                    }
+                } catch (Exception e) {
+                    log.error("批量更新待办消息异常,数据{},异常信息{}", JSON.toJSONString(updateNeeddealList), e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("批量更新待办消息异常,数据{},异常信息{}", JSON.toJSONString(updateNeeddealList), e.getMessage());
             }
-        }
 
-        // 删除
-        List<Needdeal> deleteNeeddealList = needdealMap.get(DELETE.getCode());
-        if (CollectionUtils.isNotEmpty(deleteNeeddealList)) {
-            try {
-                int result = needdealDao.updateBatch(deleteNeeddealList);
-                if (result <= 0) {
-                    log.error("批量删除待办消息失败");
+            // 删除
+            List<Needdeal> deleteNeeddealList = needdealMap.get(DELETE.getCode());
+            if (CollectionUtils.isNotEmpty(deleteNeeddealList)) {
+                try {
+                    int result = needdealDao.updateBatch(deleteNeeddealList);
+                    if (result <= 0) {
+                        log.error("批量删除待办消息失败");
+                    }
+                } catch (Exception e) {
+                    log.error("批量删除待办消息异常,数据{},异常信息{}", JSON.toJSONString(deleteNeeddealList), e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("批量删除待办消息异常,数据{},异常信息{}", JSON.toJSONString(deleteNeeddealList), e.getMessage());
             }
+        } finally {
+            SqlSessionFactoryUtil.closeSession();
         }
 
         return Collections.emptyList();

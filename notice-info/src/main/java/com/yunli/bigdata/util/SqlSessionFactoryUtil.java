@@ -41,8 +41,12 @@ public class SqlSessionFactoryUtil {
         return session;
     }
 
-    public static <T> T getMapper(Class<T> type) {
-        return openSession().getMapper(type);
+    public static void closeSession() {
+        SqlSession session = threadLocal.get();
+        if (session != null) {
+            session.close();
+            threadLocal.remove();
+        }
     }
 
 }
