@@ -21,13 +21,13 @@
         <property name="password" value="1qazxsw@Yunli123" />
         <property name="filters" value="stat" />
         <!-- 连接池中最多支持多少个活动会话 -->
-        <property name="maxActive" value="200" />
+        <property name="maxActive" value="10" />
         <!-- 初始化连接数量 -->
-        <property name="initialSize" value="5" />
+        <property name="initialSize" value="3" />
         <!-- 程序向连接池中请求连接时,超过maxWait的值后，认为本次请求失败 -->
         <property name="maxWait" value="5000" />
         <!-- 回收空闲连接时，将保证至少有minIdle个连接 -->
-        <property name="minIdle" value="5" />
+        <property name="minIdle" value="3" />
 
         <property name="timeBetweenEvictionRunsMillis" value="60000" />
         <property name="minEvictableIdleTimeMillis" value="300000" />
