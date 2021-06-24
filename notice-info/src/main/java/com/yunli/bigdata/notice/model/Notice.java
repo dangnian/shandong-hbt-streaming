@@ -36,8 +36,6 @@ public class Notice {
 
     private String readTime;
 
-    private Integer isDeleted;
-
     private Date gmtCreate;
 
     private Date gmtModified;

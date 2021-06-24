@@ -2,7 +2,6 @@ package com.yunli.bigdata.notice.dao;
 
 import com.yunli.bigdata.notice.model.Notice;
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 
 public interface NoticeDAO {
     int deleteByPrimaryKey(String id);
@@ -21,5 +20,4 @@ public interface NoticeDAO {
 
     int updateBatch(List<Notice> list);
 
-    int deleteBatch(@Param("list") List<String> idList);
 }

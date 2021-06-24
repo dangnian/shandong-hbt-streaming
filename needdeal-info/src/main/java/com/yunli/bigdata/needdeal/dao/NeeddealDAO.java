@@ -4,7 +4,6 @@ import com.yunli.bigdata.needdeal.domain.NeeddealDomain;
 import com.yunli.bigdata.needdeal.model.Needdeal;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * @author pingchangxin
@@ -27,8 +26,5 @@ public interface NeeddealDAO {
     int insertBatch(List<Needdeal> list);
 
     int updateBatch(List<Needdeal> list);
-
-    int deleteBatch(@Param("list") List<String> idList);
-
 
 }

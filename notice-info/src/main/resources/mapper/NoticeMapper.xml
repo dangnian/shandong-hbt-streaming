@@ -13,7 +13,6 @@
     <result column="app_url" property="appUrl" jdbcType="VARCHAR" />
     <result column="notice_time" property="noticeTime" jdbcType="VARCHAR" />
     <result column="read_time" property="readTime" jdbcType="VARCHAR" />
-    <result column="is_deleted" property="isDeleted" jdbcType="BIT" />
     <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
     <result column="gmt_modified" property="gmtModified" jdbcType="TIMESTAMP" />
   </resultMap>
@@ -235,9 +234,6 @@
         <if test="item.readTime != null" >
           read_time,
         </if>
-        <if test="item.isDeleted != null" >
-          is_deleted,
-        </if>
         <if test="item.gmtCreate != null" >
           gmt_create,
         </if>
@@ -278,9 +274,6 @@
         </if>
         <if test="item.readTime != null" >
           #{item.readTime,jdbcType=VARCHAR},
-        </if>
-        <if test="item.isDeleted != null" >
-          #{item.isDeleted,jdbcType=BIT},
         </if>
         <if test="item.gmtCreate != null" >
           #{item.gmtCreate,jdbcType=TIMESTAMP},
@@ -326,9 +319,6 @@
         <if test="item.readTime != null" >
           read_time = #{item.readTime,jdbcType=VARCHAR},
         </if>
-        <if test="item.isDeleted != null" >
-          is_deleted = #{item.isDeleted,jdbcType=BIT},
-        </if>
         <if test="item.gmtCreate != null" >
           gmt_create = #{item.gmtCreate,jdbcType=TIMESTAMP},
         </if>
@@ -340,13 +330,4 @@
     </foreach>
   </update>
 
-  <update id="deleteBatch" parameterType="java.util.List">
-    update dwd_ssm_notice_info_rt
-    set is_deleted = 1,
-    gmt_modified = now()
-    where id in
-    <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-      #{item}
-    </foreach>
-  </update>
 </mapper>

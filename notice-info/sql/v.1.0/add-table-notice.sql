@@ -12,8 +12,7 @@ CREATE TABLE `dwd_ssm_notice_info_rt`  (
 `app_url` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT 'App连接地址',
 `notice_time` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '通知时间',
 `read_time` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT '已读时间',
-`is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否逻辑删除--0:否，1:是',
-`gmt_create` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '新增时间',
+`gmt_create` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP COMMENT '新增时间',
 `gmt_modified` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin COMMENT = '通知实时表' ROW_FORMAT = Dynamic;

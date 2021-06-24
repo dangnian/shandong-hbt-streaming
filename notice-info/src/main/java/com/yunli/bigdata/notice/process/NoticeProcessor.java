@@ -4,6 +4,8 @@ import static com.yunli.bigdata.enums.OperateTypeEnum.ADD;
 import static com.yunli.bigdata.enums.OperateTypeEnum.DELETE;
 import static com.yunli.bigdata.enums.OperateTypeEnum.UPDATE;
 
+import com.alibaba.fastjson.JSON;
+import com.yunli.bigdata.enums.StatusEnum;
 import com.yunli.bigdata.notice.dao.NoticeDAO;
 import com.yunli.bigdata.notice.domain.MessageData;
 import com.yunli.bigdata.notice.domain.NoticeDomain;
@@ -34,6 +36,7 @@ public class NoticeProcessor implements Processor {
 
     @Override
     public List<OutputMessage> process(List<InputMessage> list, Map<String, String> map) {
+        log.info("通知消息处理器开始处理,数据{}", JSON.toJSONString(list));
         if (CollectionUtils.isEmpty(list)) {
             log.error("通知消息处理器接收数据为空");
             return Collections.emptyList();
@@ -50,28 +53,41 @@ public class NoticeProcessor implements Processor {
         NoticeDAO noticeDao = SqlSessionFactoryUtil.getMapper(NoticeDAO.class);
 
         // 新增
-        if (CollectionUtils.isNotEmpty(noticeMap.get(ADD.getCode()))) {
-            int result = noticeDao.insertBatch(noticeMap.get(ADD.getCode()));
-            if (result <= 0) {
-                log.error("批量新增通知消息失败");
+        List<Notice> addNoticeList = noticeMap.get(ADD.getCode());
+        if (CollectionUtils.isNotEmpty(addNoticeList)) {
+            try {
+                int result = noticeDao.insertBatch(addNoticeList);
+                if (result <= 0) {
+                    log.error("批量新增通知消息失败");
+                }
+            } catch (Exception e) {
+                log.error("批量新增通知消息异常,数据{},异常信息{}", JSON.toJSONString(addNoticeList), e.getMessage());
             }
         }
 
         // 更新
-        if (CollectionUtils.isNotEmpty(noticeMap.get(UPDATE.getCode()))) {
-            int result = noticeDao.updateBatch(noticeMap.get(UPDATE.getCode()));
-            if (result <= 0) {
-                log.error("批量更新通知消息失败");
+        List<Notice> updateNoticeList = noticeMap.get(UPDATE.getCode());
+        if (CollectionUtils.isNotEmpty(updateNoticeList)) {
+            try {
+                int result = noticeDao.updateBatch(updateNoticeList);
+                if (result <= 0) {
+                    log.error("批量更新通知消息失败");
+                }
+            } catch (Exception e) {
+                log.error("批量更新通知消息异常,数据{},异常信息{}", JSON.toJSONString(updateNoticeList), e.getMessage());
             }
         }
 
         // 删除
-        if (CollectionUtils.isNotEmpty(noticeMap.get(DELETE.getCode()))) {
-            int result = noticeDao.deleteBatch(noticeMap.get(DELETE.getCode()).stream()
-                    .map(Notice::getId)
-                    .collect(Collectors.toList()));
-            if (result <= 0) {
-                log.error("批量删除通知消息失败");
+        List<Notice> deleteNoticeList = noticeMap.get(DELETE.getCode());
+        if (CollectionUtils.isNotEmpty(deleteNoticeList)) {
+            try {
+                int result = noticeDao.updateBatch(deleteNoticeList);
+                if (result <= 0) {
+                    log.error("批量删除通知消息失败");
+                }
+            } catch (Exception e) {
+                log.error("批量删除通知消息异常,数据{},异常信息{}", JSON.toJSONString(deleteNoticeList), e.getMessage());
             }
         }
 
@@ -92,8 +108,11 @@ public class NoticeProcessor implements Processor {
         BeanBaseUtils.copyBean(noticeDomain, notice, true);
         Date date = new Date();
         if (ADD.getCode().equals(noticeDomain.getOperateType())) {
-            notice.setIsDeleted(0);
             notice.setGmtCreate(date);
+        }
+        // 删除写死状态（约定）
+        if (DELETE.getCode().equals(noticeDomain.getOperateType())) {
+            notice.setStatusId(StatusEnum.DELETE.getCode());
         }
         notice.setGmtModified(date);
         return notice;

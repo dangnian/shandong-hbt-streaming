@@ -93,11 +93,6 @@ public class Needdeal implements Serializable {
     private String processingTime;
 
     /**
-     * 是否删除
-     */
-    private Integer isDeleted;
-
-    /**
      * 新增时间
      */
     private Date gmtCreate;

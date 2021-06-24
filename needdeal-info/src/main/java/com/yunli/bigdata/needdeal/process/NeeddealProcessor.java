@@ -4,6 +4,8 @@ import static com.yunli.bigdata.enums.OperateTypeEnum.ADD;
 import static com.yunli.bigdata.enums.OperateTypeEnum.DELETE;
 import static com.yunli.bigdata.enums.OperateTypeEnum.UPDATE;
 
+import com.alibaba.fastjson.JSON;
+import com.yunli.bigdata.enums.StatusEnum;
 import com.yunli.bigdata.needdeal.dao.NeeddealDAO;
 import com.yunli.bigdata.needdeal.domain.MessageData;
 import com.yunli.bigdata.needdeal.domain.NeeddealDomain;
@@ -34,6 +36,7 @@ public class NeeddealProcessor implements Processor {
 
     @Override
     public List<OutputMessage> process(List<InputMessage> list, Map<String, String> map) {
+        log.info("待办消息处理器开始处理,接收数据{}", JSON.toJSONString(list));
         if (CollectionUtils.isEmpty(list)) {
             log.error("待办消息处理器接收数据为空");
             return Collections.emptyList();
@@ -50,28 +53,41 @@ public class NeeddealProcessor implements Processor {
         NeeddealDAO needdealDao = SqlSessionFactoryUtil.getMapper(NeeddealDAO.class);
 
         // 新增
-        if (CollectionUtils.isNotEmpty(needdealMap.get(ADD.getCode()))) {
-            int result = needdealDao.insertBatch(needdealMap.get(ADD.getCode()));
-            if (result <= 0) {
-                log.error("批量新增待办消息失败");
+        List<Needdeal> addNeeddealList = needdealMap.get(ADD.getCode());
+        if (CollectionUtils.isNotEmpty(addNeeddealList)) {
+            try {
+                int result = needdealDao.insertBatch(addNeeddealList);
+                if (result <= 0) {
+                    log.error("批量新增待办消息失败");
+                }
+            } catch (Exception e) {
+                log.error("批量新增待办消息异常,数据{},异常信息{}", JSON.toJSONString(addNeeddealList), e.getMessage());
             }
         }
 
         // 更新
-        if (CollectionUtils.isNotEmpty(needdealMap.get(UPDATE.getCode()))) {
-            int result = needdealDao.updateBatch(needdealMap.get(UPDATE.getCode()));
-            if (result <= 0) {
-                log.error("批量更新待办消息失败");
+        List<Needdeal> updateNeeddealList = needdealMap.get(UPDATE.getCode());
+        if (CollectionUtils.isNotEmpty(updateNeeddealList)) {
+            try {
+                int result = needdealDao.updateBatch(updateNeeddealList);
+                if (result <= 0) {
+                    log.error("批量更新待办消息失败");
+                }
+            } catch (Exception e) {
+                log.error("批量更新待办消息异常,数据{},异常信息{}", JSON.toJSONString(updateNeeddealList), e.getMessage());
             }
         }
 
         // 删除
-        if (CollectionUtils.isNotEmpty(needdealMap.get(DELETE.getCode()))) {
-            int result = needdealDao.deleteBatch(needdealMap.get(DELETE.getCode()).stream()
-                    .map(Needdeal::getId)
-                    .collect(Collectors.toList()));
-            if (result <= 0) {
-                log.error("批量删除待办消息失败");
+        List<Needdeal> deleteNeeddealList = needdealMap.get(DELETE.getCode());
+        if (CollectionUtils.isNotEmpty(deleteNeeddealList)) {
+            try {
+                int result = needdealDao.updateBatch(deleteNeeddealList);
+                if (result <= 0) {
+                    log.error("批量删除待办消息失败");
+                }
+            } catch (Exception e) {
+                log.error("批量删除待办消息异常,数据{},异常信息{}", JSON.toJSONString(deleteNeeddealList), e.getMessage());
             }
         }
 
@@ -92,8 +108,11 @@ public class NeeddealProcessor implements Processor {
         BeanBaseUtils.copyBean(needdealDomain, needdeal, true);
         Date date = new Date();
         if (ADD.getCode().equals(needdealDomain.getOperateType())) {
-            needdeal.setIsDeleted(0);
             needdeal.setGmtCreate(date);
+        }
+        // 删除写死状态（约定）
+        if (DELETE.getCode().equals(needdealDomain.getOperateType())) {
+            needdeal.setStatusId(StatusEnum.DELETE.getCode());
         }
         needdeal.setGmtModified(date);
         return needdeal;
