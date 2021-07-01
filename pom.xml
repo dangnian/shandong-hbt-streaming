@@ -18,7 +18,7 @@
     <scala.binary.version>2.11</scala.binary.version>
     <springboot.version>2.2.8.RELEASE</springboot.version>
     <jackson.version>2.10.4</jackson.version>
-    <streaming.sdk.version>2.1.0-RELEASE</streaming.sdk.version>
+    <streaming.sdk.version>2.2.0-RELEASE</streaming.sdk.version>
   </properties>
 
   <dependencyManagement>
